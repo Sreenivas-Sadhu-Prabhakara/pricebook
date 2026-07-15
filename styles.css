@@ -48,7 +48,7 @@
     --line:      #2C4C3B;
     --line2:     #375C48;
     --pine:      #5FCB8E;   /* brightened for dark bg */
-    --pine-deep: #3FA972;
+    --pine-deep: #54C48D;   /* AA (5.9:1) as small text on --card (e.g. panel legend) */
     --tag:       #F2A155;   /* brightened clay — AA on dark card */
     --tag-ink:   #F7C79A;
     --best:      #7BE0A6;   /* AA text on best-dim (dark) */
