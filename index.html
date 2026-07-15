@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'">
+  <title>pricebook — know the real cheapest by unit price</title>
+  <meta name="description" content="A private unit-price comparator and price log. Enter package size and price for each option; pricebook does the g↔kg and ml↔L math and flags the real cheapest per 100 g, per litre, or per each. Offline, no accounts.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://sreenivas-sadhu-prabhakara.github.io/pricebook/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Sreenivas Sadhu Prabhakara">
+  <meta name="keywords" content="unit price comparator, price per 100g, price per litre, cost per unit calculator, grocery price tracker, which is cheaper, unit price calculator, price book, compare package sizes, bulk buy savings">
+  <meta name="theme-color" content="#F4F1E9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0F2A1E" media="(prefers-color-scheme: dark)">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="pricebook">
+  <meta property="og:title" content="pricebook — know the real cheapest by unit price">
+  <meta property="og:description" content="A private unit-price comparator and price log. It does the g↔kg and ml↔L math and flags the real cheapest per 100 g, per litre, or per each. Offline, no accounts.">
+  <meta property="og:url" content="https://sreenivas-sadhu-prabhakara.github.io/pricebook/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://sreenivas-sadhu-prabhakara.github.io/pricebook/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="pricebook — the real cheapest, by unit price">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="pricebook — know the real cheapest by unit price">
+  <meta name="twitter:description" content="A private unit-price comparator and price log. It does the g↔kg and ml↔L math and flags the real cheapest per 100 g, per litre, or per each.">
+  <meta name="twitter:image" content="https://sreenivas-sadhu-prabhakara.github.io/pricebook/og-image.png">
+  <meta name="twitter:image:alt" content="pricebook — the real cheapest, by unit price">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Structured data (data block; not affected by script-src) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "pricebook",
+    "description": "A private unit-price comparator and price log. Enter each option's package size and price; pricebook normalises with correct g↔kg and ml↔L conversion and flags the cheapest per 100 g, per litre, or per each. Keeps a per-option price log and exports to CSV. Works fully offline.",
+    "url": "https://sreenivas-sadhu-prabhakara.github.io/pricebook/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (modern web browser)",
+    "browserRequirements": "Requires a modern web browser with JavaScript enabled.",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Sreenivas Sadhu Prabhakara" },
+    "softwareVersion": "0.1.0",
+    "featureList": [
+      "Unit-price normalisation per 100 g, per litre, or per each",
+      "Correct g↔kg and ml↔L conversion so mixed sizes compare fairly",
+      "Best-value badge on the cheapest option per product",
+      "Per-option price log with dated entries to track trends",
+      "Side-by-side compare view",
+      "RFC 4180 CSV export of every product, option, and price entry",
+      "Runs 100% offline in your browser"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How does pricebook decide which option is cheapest?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It converts every option to a common basis before comparing. Weights normalise to price per 100 g, volumes to price per litre, and countable items to price per each. So 500 g at 100 (20 per 100 g) is correctly flagged as more expensive than 1 kg at 180 (18 per 100 g), even though the larger pack has the bigger sticker price."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I mix grams and kilograms, or millilitres and litres?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Options in the same family are converted to one base unit first: grams and kilograms both become grams, millilitres and litres both become millilitres. 0.5 kg at 100 and 500 g at 100 give the exact same unit price. pricebook will not compare a weight against a volume, because that would be meaningless."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is this a live price feed or scraped from stores?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. pricebook shows only prices you type in yourself. There is no crowd data, no scraping, and no network of any kind — a strict Content-Security-Policy blocks all connections. It simply does the unit-price arithmetic for you and remembers what you logged, entirely on your own device."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#book">Skip to my price book</a>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero" id="top">
+    <div class="hero__weave" aria-hidden="true">
+      <svg class="weave" viewBox="0 0 1440 360" preserveAspectRatio="xMidYMid slice" role="presentation">
+        <g class="weave__tags"></g>
+      </svg>
+    </div>
+
+    <div class="hero__inner">
+      <div class="brand">
+        <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="3" y="3" width="26" height="26" rx="6" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.35"/>
+          <path d="M16 6v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8 9h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8 9l-3 6h6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M24 9l-3 6h6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M13 24h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16 9v15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="brand__word">pricebook</span>
+      </div>
+      <p class="eyebrow">Unit-price comparator &middot; price log &middot; offline</p>
+      <h1 class="hero__title">Know the <span class="hero__accent">real</span> cheapest &mdash; by unit price.</h1>
+      <p class="hero__lede">
+        The big pack isn&rsquo;t always the better deal. Enter each option&rsquo;s <em>size</em> and <em>price</em>;
+        pricebook does the g&harr;kg and ml&harr;L math and tells you the true cost <em>per 100&nbsp;g</em>,
+        <em>per litre</em>, or <em>per each</em>&mdash;then flags the winner. Prices you log, on your device only.
+      </p>
+
+      <!-- ============ ADD PRODUCT ============ -->
+      <form class="composer" id="composer" novalidate>
+        <fieldset class="panel panel--product">
+          <legend class="panel__legend">New product</legend>
+          <div class="field field--grow">
+            <label for="pName">Product name</label>
+            <input type="text" id="pName" name="pName" maxlength="80" placeholder="e.g. Rolled oats" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="pCategory">Category <span class="field__sub">optional</span></label>
+            <input type="text" id="pCategory" name="pCategory" maxlength="40" placeholder="Pantry" autocomplete="off" list="catList">
+            <datalist id="catList"></datalist>
+          </div>
+          <div class="field">
+            <label for="pCurrency">Currency symbol</label>
+            <input type="text" id="pCurrency" name="pCurrency" maxlength="4" value="₹" autocomplete="off">
+          </div>
+        </fieldset>
+
+        <fieldset class="panel panel--option">
+          <legend class="panel__legend">First option</legend>
+          <div class="optrow">
+            <div class="field">
+              <label for="oBrand">Brand / label <span class="field__sub">optional</span></label>
+              <input type="text" id="oBrand" name="oBrand" maxlength="60" placeholder="Store brand" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="oStore">Store <span class="field__sub">optional</span></label>
+              <input type="text" id="oStore" name="oStore" maxlength="60" placeholder="Local market" autocomplete="off" list="storeList">
+              <datalist id="storeList"></datalist>
+            </div>
+          </div>
+          <div class="optrow optrow--nums">
+            <div class="field field--num">
+              <label for="oSize">Pack size</label>
+              <input type="number" id="oSize" name="oSize" min="0" step="any" inputmode="decimal" placeholder="500">
+            </div>
+            <div class="field field--unit">
+              <label for="oUnit">Unit</label>
+              <select id="oUnit" name="oUnit">
+                <option value="g">g (grams)</option>
+                <option value="kg">kg (kilograms)</option>
+                <option value="ml">ml (millilitres)</option>
+                <option value="l">L (litres)</option>
+                <option value="each">each / count</option>
+              </select>
+            </div>
+            <div class="field field--num">
+              <label for="oPrice">Price</label>
+              <input type="number" id="oPrice" name="oPrice" min="0" step="any" inputmode="decimal" placeholder="100">
+            </div>
+          </div>
+          <p class="panel__hint" id="composerHint">You can add more options (other brands, stores, pack sizes) once the product exists.</p>
+        </fieldset>
+
+        <div class="composer__action">
+          <button type="submit" class="btn btn--primary" id="addBtn">Add product</button>
+          <span class="composer__note">Everything stays on this device.</span>
+        </div>
+      </form>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ TOOLBAR ============ -->
+    <section class="toolbar" id="book" aria-labelledby="toolbarHeading">
+      <div class="toolbar__inner">
+        <div class="toolbar__lead">
+          <h2 class="toolbar__heading" id="toolbarHeading">Your price book</h2>
+          <p class="toolbar__stat" id="bookStat">No products yet.</p>
+        </div>
+        <div class="toolbar__controls">
+          <label class="search">
+            <span class="search__label">Filter</span>
+            <input type="search" id="search" placeholder="name, brand, store…" autocomplete="off">
+          </label>
+          <label class="sortsel">
+            <span class="sortsel__label">Sort</span>
+            <select id="sortSel">
+              <option value="recent">Recently updated</option>
+              <option value="name">Name (A–Z)</option>
+              <option value="category">Category</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn--ghost" id="exportBtn">Export CSV</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COMPARE STRIP ============ -->
+    <section class="compare" id="compare" aria-live="polite" hidden>
+      <div class="compare__inner">
+        <h2 class="compare__title">Side-by-side compare</h2>
+        <div class="compare__grid" id="compareGrid"></div>
+        <p class="compare__note">Comparing options within a single product, cheapest unit price first.</p>
+      </div>
+    </section>
+
+    <!-- ============ PRODUCTS ============ -->
+    <section class="products" id="products" aria-label="Products"></section>
+
+    <!-- ============ EMPTY STATE ============ -->
+    <section class="empty" id="empty">
+      <div class="empty__inner">
+        <svg class="empty__glyph" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M24 6v5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M11 13h26" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M11 13l-5 10h10z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M37 13l-5 10h10z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M18 40h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M24 13v27" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+        <h2 class="empty__title">Weigh two options and see which really wins.</h2>
+        <p class="empty__body">
+          Add a product above with its first option, then add competing brands, stores, or pack sizes.
+          pricebook converts everything to a fair unit price and marks the best value.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="foot">
+    <div class="foot__inner">
+      <p class="foot__disclaimer">
+        <strong>These are your own logged prices.</strong> pricebook is not a live price feed and does not scrape
+        or crowd-source anything&mdash;it only shows what you type in, and does the unit-price arithmetic so you
+        don&rsquo;t have to. Always check the current shelf price before you buy.
+      </p>
+      <p class="foot__meta">
+        <span>Works 100% offline</span><span class="foot__dot">&middot;</span>
+        <span>No network, no accounts</span><span class="foot__dot">&middot;</span>
+        <span>MIT&nbsp;License</span><span class="foot__dot">&middot;</span>
+        <span>&copy; 2026 Sreenivas&nbsp;Sadhu&nbsp;Prabhakara</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ============ OPTION-ADD TEMPLATE (cloned by JS) ============ -->
+  <template id="optionFormTpl">
+    <form class="addopt" novalidate>
+      <div class="addopt__row">
+        <div class="field">
+          <label>Brand / label</label>
+          <input type="text" data-f="brand" maxlength="60" placeholder="Brand" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Store</label>
+          <input type="text" data-f="store" maxlength="60" placeholder="Store" autocomplete="off">
+        </div>
+      </div>
+      <div class="addopt__row addopt__row--nums">
+        <div class="field field--num">
+          <label>Pack size</label>
+          <input type="number" data-f="size" min="0" step="any" inputmode="decimal" placeholder="0">
+        </div>
+        <div class="field field--unit">
+          <label>Unit</label>
+          <select data-f="unit">
+            <option value="g">g</option>
+            <option value="kg">kg</option>
+            <option value="ml">ml</option>
+            <option value="l">L</option>
+            <option value="each">each</option>
+          </select>
+        </div>
+        <div class="field field--num">
+          <label>Price</label>
+          <input type="number" data-f="price" min="0" step="any" inputmode="decimal" placeholder="0">
+        </div>
+      </div>
+      <div class="addopt__action">
+        <button type="submit" class="btn btn--small btn--primary" data-a="save">Add option</button>
+        <button type="button" class="btn btn--small btn--ghost" data-a="cancel">Cancel</button>
+      </div>
+    </form>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
